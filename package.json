@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "search-everything.helloWorld",
-        "title": "Hello World"
+        "command": "search-everything.search",
+        "title": "Search Everything"
       }
     ]
   },
