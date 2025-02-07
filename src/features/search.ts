@@ -35,3 +35,27 @@ export const searchFeature = vscode.commands.registerCommand('search-everything.
         });
     });
 });
+
+
+function getTable() {
+    // const table = vscode.window.createWebviewPanel(
+    //     'search-everything',
+    //     'Search Everything',
+    //     vscode.ViewColumn.One,
+    //     {
+    //         enableScripts: true
+    //     }
+    // );
+
+    // table.webview.html = getWebviewContent();
+}
+
+function getView() {
+    // const view = vscode.window.createTreeView('search-everything', {
+    //     treeDataProvider: new SearchEverythingProvider()
+    // });
+}
+
+function getStoredProcedure() {
+    // const store = createStore(reducer);
+}
