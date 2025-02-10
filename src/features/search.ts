@@ -10,21 +10,25 @@ export const searchFeature = vscode.commands.registerCommand('search-everything.
     }, (progress, token) => {
         return new Promise<void>((resolve) => {
             getActiveMssqlConnections().then((connections) => {
+                debugger;
                 if (connections.length === 0) {
                     vscode.window.showInformationMessage("No active SQL Server connections.");
                     resolve();
                     return;
                 }
 
+                debugger;
                 const items = connections.map((conn: any) => ({
                     label: `${conn.server}:${conn.port}`,
                     description: conn.database,
                     detail: `User: ${conn.user}`
                 }));
 
+                debugger;
                 vscode.window.showQuickPick(items, {
                     placeHolder: "Select an active SQL Server connection"
                 }).then((selected) => {
+                    debugger;
                     if (selected) {
                         handleSearch(selected).then(() => resolve()).catch(() => resolve());
                     } else {
