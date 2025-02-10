@@ -12,7 +12,7 @@ export const searchFeature = vscode.commands.registerCommand('search-everything.
 
             debugger;
             if (connections.length === 0) {
-                vscode.window.showInformationMessage("No active SQL Server connections.");
+                vscode.window.showWarningMessage("No active SQL Server connections.");
                 resolve();
                 return;
             }
