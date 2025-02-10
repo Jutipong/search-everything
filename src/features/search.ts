@@ -1,72 +1,40 @@
 import * as vscode from 'vscode';
+import { getActiveMssqlConnections } from '../connectionHandler';
+import { handleSearch } from '../searchHandler';
 
 export const searchFeature = vscode.commands.registerCommand('search-everything.search', () => {
-    // vscode.window.showInformationMessage('Hello World from search everything!');
     vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
-        title: 'loading...',
+        title: 'Loading...',
         cancellable: false
     }, (progress, token) => {
         return new Promise<void>((resolve) => {
+            getActiveMssqlConnections().then((connections) => {
+                if (connections.length === 0) {
+                    vscode.window.showInformationMessage("No active SQL Server connections.");
+                    resolve();
+                    return;
+                }
 
+                const items = connections.map((conn: any) => ({
+                    label: `${conn.server}:${conn.port}`,
+                    description: conn.database,
+                    detail: `User: ${conn.user}`
+                }));
 
-            GetConnection().then((connection) => {
-                // progress.report({ increment: 0, message: 'Start' });
-            }).catch((error) => {
-                vscode.window.showErrorMessage(error.message);
-                resolve();
-            }).finally(() => {
-                // progress.report({ increment: 100, message: 'Finished' });
-                resolve();
+                vscode.window.showQuickPick(items, {
+                    placeHolder: "Select an active SQL Server connection"
+                }).then((selected) => {
+                    if (selected) {
+                        handleSearch(selected).then(() => resolve()).catch(() => resolve());
+                    } else {
+                        resolve();
+                    }
+                });
             });
         });
     });
 });
-
-async function GetConnection() {
-    try {
-        // let connection = await vscode.commands.executeCommand('mssql.getCurrentConnection');
-        debugger;
-        const con = vscode.extensions.getExtension('ms-mssql.mssql');
-
-        if (!con) {
-            throw new Error("Connect to server before use SearchEverything.");
-        }
-
-        // get list of connections
-        con.exports.activate().then((api: any) => {
-            debugger;
-            api.getConnections().then((connections: any) => {
-                debugger;
-                if (connections.length > 0) {
-                    debugger;
-                    // connection = connections[0];
-                    console.log(connections);
-                }
-            });
-        });
-    } catch (error: any) {
-        debugger;
-        vscode.window.showErrorMessage(error.message);
-    }
-
-
-    // .activate().then((api) => {
-    //     vscode.window.showInformationMessage('Hello World from search everything!');
-    //     api.getConnections().then((connections) => {
-    //         vscode.window.showInformationMessage('Hello World from search everything!');
-    //         if (connections.length > 0) {
-    //             connection = connections[0];
-    //         }
-    //     });
-    // });
-    // if (!connection) {
-    //     throw new Error("Connect to server before use SearchEverywhere.");
-    // }
-
-    // return connection;
-    return null;
-}
 
 function getTable() {
     // const table = vscode.window.createWebviewPanel(
