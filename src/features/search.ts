@@ -4,38 +4,69 @@ export const searchFeature = vscode.commands.registerCommand('search-everything.
     // vscode.window.showInformationMessage('Hello World from search everything!');
     vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
-        title: 'Hello World',
-        cancellable: true
+        title: 'loading...',
+        cancellable: false
     }, (progress, token) => {
         return new Promise<void>((resolve) => {
-            // token.onCancellationRequested(() => {
-            //     debugger;
-            //     console.log('User canceled the long running operation');
-            //     resolve();
-            // });
 
-            progress.report({ increment: 0, message: 'Start' });
 
-            setTimeout(() => {
-                progress.report({ increment: 10, message: 'Some progress message' });
-            }, 1000);
-
-            setTimeout(() => {
-                progress.report({ increment: 40, message: 'Some progress message' });
-            }, 2000);
-
-            setTimeout(() => {
-                progress.report({ increment: 50, message: 'Some progress message' });
-            }, 3000);
-
-            setTimeout(() => {
-                progress.report({ increment: 100, message: 'Finished' });
+            GetConnection().then((connection) => {
+                // progress.report({ increment: 0, message: 'Start' });
+            }).catch((error) => {
+                vscode.window.showErrorMessage(error.message);
                 resolve();
-            }, 4000);
+            }).finally(() => {
+                // progress.report({ increment: 100, message: 'Finished' });
+                resolve();
+            });
         });
     });
 });
 
+async function GetConnection() {
+    try {
+        // let connection = await vscode.commands.executeCommand('mssql.getCurrentConnection');
+        debugger;
+        const con = vscode.extensions.getExtension('ms-mssql.mssql');
+
+        if (!con) {
+            throw new Error("Connect to server before use SearchEverything.");
+        }
+
+        // get list of connections
+        con.exports.activate().then((api: any) => {
+            debugger;
+            api.getConnections().then((connections: any) => {
+                debugger;
+                if (connections.length > 0) {
+                    debugger;
+                    // connection = connections[0];
+                    console.log(connections);
+                }
+            });
+        });
+    } catch (error: any) {
+        debugger;
+        vscode.window.showErrorMessage(error.message);
+    }
+
+
+    // .activate().then((api) => {
+    //     vscode.window.showInformationMessage('Hello World from search everything!');
+    //     api.getConnections().then((connections) => {
+    //         vscode.window.showInformationMessage('Hello World from search everything!');
+    //         if (connections.length > 0) {
+    //             connection = connections[0];
+    //         }
+    //     });
+    // });
+    // if (!connection) {
+    //     throw new Error("Connect to server before use SearchEverywhere.");
+    // }
+
+    // return connection;
+    return null;
+}
 
 function getTable() {
     // const table = vscode.window.createWebviewPanel(
