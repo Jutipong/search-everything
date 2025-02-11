@@ -81,7 +81,6 @@ export const searchFeature = vscode.commands.registerCommand('search-everything.
                 </html>
             `;
     } catch (err: any) {
-        debugger;
         vscode.window.showErrorMessage(`Error checking connections: ${err}`);
     }
 });

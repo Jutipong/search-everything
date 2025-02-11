@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+// import { Connection, TYPES } from 'mssql';
 
 export class MssqlConnectionManager {
     // เช็คว่า ms-mssql extension ถูกติดตั้งหรือไม่
@@ -18,16 +19,19 @@ export class MssqlConnectionManager {
     // ดึงข้อมูลการเชื่อมต่อทั้งหมดที่มีอยู่
     public async getActiveConnections(): Promise<any[]> {
         try {
-            // เรียกใช้ API ของ ms-mssql extension
+            // ดึง API ของ ms-mssql extension
             const api = await this.getMssqlApi();
             if (!api) {
                 throw new Error('Could not get MS SQL extension API');
             }
 
             // ดึงข้อมูลการเชื่อมต่อทั้งหมด
+            const connections = await api.getActiveConnections();
+            console.log('Active connections:', connections);
+
             debugger;
-            const connections = await api.getServerInfo();
             return connections;
+
         } catch (err) {
             console.error('Failed to get connections:', err);
             throw err;
@@ -36,15 +40,21 @@ export class MssqlConnectionManager {
 
     // ดึง API ของ ms-mssql extension
     private async getMssqlApi(): Promise<any> {
-        const extension = vscode.extensions.getExtension('ms-mssql.mssql');
-        if (!extension) {
-            return null;
-        }
+        try {
+            const mssqlExt = vscode.extensions.getExtension('ms-mssql.mssql');
+            if (!mssqlExt) {
+                return null;
+            }
 
-        if (!extension.isActive) {
-            await extension.activate();
-        }
+            if (!mssqlExt.isActive) {
+                await mssqlExt.activate();
+            }
 
-        return extension.exports;
+            return mssqlExt.exports;
+        } catch (err) {
+            console.error('Failed to get mssql extension:', err);
+            throw err;
+
+        }
     }
 }
